@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {fetchWifi} from "../api/wifi";
 
 
@@ -7,7 +7,7 @@ export default function WifiPage() {
         console.log("FETCHING")
         fetchWifi();
     }, []);
-    const [loaded, setLoaded] = useState(false);
+    // const [loaded, setLoaded] = useState(false);
 
     return <>
         {/*<LoadingOverlay visible={!loaded} overlayBlur={2}/>*/}
