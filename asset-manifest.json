@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/moonshinery/static/css/main.31d6cfe0.css",
-    "main.js": "/moonshinery/static/js/main.c8ce56fc.js",
+    "main.js": "/moonshinery/static/js/main.a860c4c5.js",
     "static/js/787.fcb6bb33.chunk.js": "/moonshinery/static/js/787.fcb6bb33.chunk.js",
     "index.html": "/moonshinery/index.html",
-    "main.c8ce56fc.js.map": "/moonshinery/static/js/main.c8ce56fc.js.map",
+    "main.a860c4c5.js.map": "/moonshinery/static/js/main.a860c4c5.js.map",
     "787.fcb6bb33.chunk.js.map": "/moonshinery/static/js/787.fcb6bb33.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.31d6cfe0.css",
-    "static/js/main.c8ce56fc.js"
+    "static/js/main.a860c4c5.js"
   ]
 }
