@@ -1,26 +1,72 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useEffect, useState} from 'react';
+import {
+    ActionIcon,
+    AppShell,
+    Burger, Container,
+    Group,
+    Header,
+    MediaQuery,
+    Navbar, Paper,
+    useMantineColorScheme,
+    useMantineTheme,
+} from "@mantine/core";
+import {IconMoonStars, IconSun} from "@tabler/icons-react";
+import {Logo} from "./layout/Logo";
+import LayoutRoutes from "./layout/LayoutRoutes";
+import SidebarMenu from "./layout/SidebarMenu";
+import {useLocation} from "react-router-dom";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    const {colorScheme, toggleColorScheme} = useMantineColorScheme();
+    const theme = useMantineTheme();
+    const [opened, setOpened] = useState(false);
+    const location = useLocation();
+    useEffect(() => {
+        setOpened(false);
+    }, [location]);
+    return (
+        <AppShell
+            padding="md"
+            styles={{
+                main: {
+                    background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
+                },
+            }}
+            navbarOffsetBreakpoint="sm"
+            asideOffsetBreakpoint="sm"
+            navbar={<Navbar width={{sm: 200, lg: 300}} p="xs" hidden={!opened} style={{zIndex: 500}}>
+                <Navbar.Section grow mt="xs">
+                    <SidebarMenu/>
+                </Navbar.Section>
+            </Navbar>}
+
+            header={<Header height={{base: 50, md: 70}} p="xs">
+                <Group sx={{height: '100%'}} px={20} position="apart">
+                    <MediaQuery largerThan="sm" styles={{display: 'none'}}>
+                        <Burger
+                            opened={opened}
+                            onClick={() => setOpened((o) => !o)}
+                            size="sm"
+                            color={theme.colors.gray[6]}
+                            mr="xl"
+                        />
+                    </MediaQuery>
+                    <Logo/>
+
+                    <ActionIcon variant="default" onClick={() => toggleColorScheme()} size={30}>
+                        {colorScheme === 'dark' ? <IconSun/> : <IconMoonStars/>}
+                    </ActionIcon>
+                </Group>
+            </Header>}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+            <Paper mx={'md'} my={'xs'} p={'md'} style={{minHeight: '50vh', position: 'relative'}}>
+                <Container>
+                    <LayoutRoutes/>
+                </Container>
+            </Paper>
+
+        </AppShell>
+    );
 }
 
 export default App;
