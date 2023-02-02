@@ -1,6 +1,8 @@
-import {IconHome, IconWifi, TablerIconsProps} from "@tabler/icons-react";
+import {IconHome, IconPower, IconThermometer, IconWifi, TablerIconsProps} from "@tabler/icons-react";
 import IndexPage from "./pages/IndexPage";
 import WifiPage from "./pages/WifiPage";
+import TemperatureSensorsPage from "./pages/TemperatureSensorsPage";
+import RelayPage from "./pages/RelayPage";
 
 interface MenuItem {
     path: string;
@@ -9,12 +11,25 @@ interface MenuItem {
     component: () => JSX.Element;
 }
 
-export const Menu: MenuItem[] = [
+export const Menu: (MenuItem | null)[] = [
     {
         path: '/',
         title: 'Home',
         icon: IconHome,
         component: IndexPage
+    },
+    null,
+    {
+        path: '/sensors',
+        title: 'Sensors',
+        icon: IconThermometer,
+        component: TemperatureSensorsPage
+    },
+    {
+        path: '/relays',
+        title: 'Relays',
+        icon: IconPower,
+        component: RelayPage
     },
     {
         path: '/wifi',

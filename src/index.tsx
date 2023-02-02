@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {ColorScheme, ColorSchemeProvider, MantineProvider} from '@mantine/core';
-import {BrowserRouter} from "react-router-dom";
+import {HashRouter} from "react-router-dom";
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -45,9 +45,9 @@ function Index() {
     return (
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
             <MantineProvider theme={{colorScheme}} withGlobalStyles withNormalizeCSS>
-                <BrowserRouter>
+                <HashRouter>
                     <App/>
-                </BrowserRouter>
+                </HashRouter>
             </MantineProvider>
         </ColorSchemeProvider>
     );

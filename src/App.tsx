@@ -2,11 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {
     ActionIcon,
     AppShell,
-    Burger, Container,
+    Burger,
+    Container,
     Group,
     Header,
     MediaQuery,
-    Navbar, Paper,
+    Navbar,
     useMantineColorScheme,
     useMantineTheme,
 } from "@mantine/core";
@@ -26,15 +27,17 @@ function App() {
     }, [location]);
     return (
         <AppShell
-            padding="md"
+            padding={0}
             styles={{
                 main: {
                     background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
                 },
             }}
-            navbarOffsetBreakpoint="sm"
-            asideOffsetBreakpoint="sm"
-            navbar={<Navbar width={{sm: 200, lg: 300}} p="xs" hidden={!opened} style={{zIndex: 500}}>
+            navbarOffsetBreakpoint={'sm'}
+            asideOffsetBreakpoint={'sm'}
+            navbar={<Navbar width={{xs: 200, lg: 300}} p="xs" hidden={!opened} style={{zIndex: 500}}
+            hiddenBreakpoint={'sm'}
+            >
                 <Navbar.Section grow mt="xs">
                     <SidebarMenu/>
                 </Navbar.Section>
@@ -59,11 +62,10 @@ function App() {
                 </Group>
             </Header>}
         >
-            <Paper mx={'md'} my={'xs'} p={'md'} style={{minHeight: '50vh', position: 'relative'}}>
-                <Container>
-                    <LayoutRoutes/>
-                </Container>
-            </Paper>
+            <Container mx={{base: 0, sm: 'md'}} my={'xs'} p={'md'} pb={0} mb={0}
+                       style={{minHeight: '50vh', position: 'relative'}}>
+                <LayoutRoutes/>
+            </Container>
 
         </AppShell>
     );

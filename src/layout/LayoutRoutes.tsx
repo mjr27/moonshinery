@@ -4,6 +4,7 @@ import React from "react";
 
 export default function LayoutRoutes() {
     return <Routes>
-        {Menu.map(item => <Route path={item.path} key={item.path} element={<item.component/>}/>)}
+        {Menu.filter(r => r != null).map(item => item &&
+            <Route path={item.path} key={item.path} element={<item.component/>}/>)}
     </Routes>
 }
