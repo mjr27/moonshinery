@@ -18,7 +18,7 @@ const WifiList: React.FC<{
                 <Group style={{textAlign: "right"}}>
                     {!isNaN(network.rssi) ? <Badge size={'xs'} radius={'sm'}>{network.rssi} dBm</Badge> : null}
                     <Button.Group>
-                        {network.ssid == "mjr@matv"
+                        {network.ssid === "mjr@matv"
                             ? <ActionIcon>
                                 <IconAntennaOff size={18}/>
                             </ActionIcon>

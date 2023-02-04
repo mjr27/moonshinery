@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import PageHeader from "../layout/PageHeader";
-import {ActionIcon, Box, Group, Switch} from "@mantine/core";
-import {IconReload} from "@tabler/icons-react";
-import {readRelaysStatus, setRelayStatus} from "../api/relays";
+import { ActionIcon, Box, Group, Switch } from "@mantine/core";
+import { IconReload } from "@tabler/icons-react";
+import { readRelaysStatus, setRelayStatus } from "../api/relays";
 
 export default function RelayPage() {
-    const [_, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [relays, setRelays] = useState<boolean[]>([]);
     const reload = async () => {
         setRelays(await readRelaysStatus())
@@ -28,16 +28,16 @@ export default function RelayPage() {
         }
     }, [])
     return <>
-        <PageHeader
+        {loading && <PageHeader
             actions={<Group>
                 <ActionIcon size={'lg'} onClick={reload}>
-                    <IconReload/>
+                    <IconReload />
                 </ActionIcon>
             </Group>}
-        >Temperature sensors</PageHeader>
+        >Temperature sensors</PageHeader> }
         <Group>
             {relays.map((enabled, i) => <Box key={i}>
-                <Switch checked={enabled} onClick={() => toggleRelay(i)}/>
+                <Switch checked={enabled} onClick={() => toggleRelay(i)} />
             </Box>)}
         </Group>
     </>
