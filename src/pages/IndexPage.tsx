@@ -1,5 +1,5 @@
 export default function IndexPage ()  {
     return <b>
-        preved
+        index
     </b>
 }

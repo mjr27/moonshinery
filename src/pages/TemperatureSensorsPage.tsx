@@ -1,21 +1,21 @@
 import PageHeader from "../layout/PageHeader";
 import React, {useEffect, useState} from "react";
-import {ISensor, readTemperatureSensors, rotateTemperatureSensors, scanTemperatureSensors} from "../api/temperature";
 import {ActionIcon, Code, Group, LoadingOverlay, RingProgress, Text} from "@mantine/core";
 import {IconLoader, IconPlayerTrackNext, IconReload} from "@tabler/icons-react";
+import {apiSensorsList, apiTemperatureSensorsRescan, apiTemperatureSensorsRotate, ISensorInfo} from "../api/sensors";
 
 export default function TemperatureSensorsPage() {
     const [loading, setLoading] = useState(true);
-    const [sensors, setSensors] = useState<ISensor>({temperature: [], leakage: []});
+    const [sensors, setSensors] = useState<ISensorInfo>({temperature: [], leakage: []});
     const reload = async () => {
-        setSensors(await readTemperatureSensors())
+        setSensors(await apiSensorsList())
         setLoading(false);
     }
     const rotate = async () => {
-        setSensors(await rotateTemperatureSensors())
+        setSensors(await apiTemperatureSensorsRotate())
     }
     const scan = async () => {
-        setSensors(await scanTemperatureSensors())
+        setSensors(await apiTemperatureSensorsRescan())
     }
     useEffect(() => {
         let finished = false;

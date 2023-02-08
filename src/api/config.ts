@@ -1,6 +1,29 @@
-import urlJoin from 'url-join';
+import {apiFetchGet, apiFetchPost} from "./_urls";
 
-// export const ROOT_URI: string = process.env.REACT_APP_ESP32_HOST ?? "https://esp32.local";
-export const ROOT_URI: string = "http://esp32.local";
-export const getUri = (path: string): string => urlJoin(ROOT_URI, path);
+export interface ILeakageConfiguration {
+    window: number;
+    threshold: number;
+}
 
+export interface IPotStillConfiguration {
+    window: number;
+    cool_threshold: number;
+    off_threshold: number;
+}
+
+export function apiConfigGetLeak(): Promise<ILeakageConfiguration> {
+    return apiFetchGet<ILeakageConfiguration>("/config/leak");
+}
+
+export function apiConfigSetLeak(configuration: ILeakageConfiguration): Promise<ILeakageConfiguration> {
+    return apiFetchPost<ILeakageConfiguration>("/config/leak", configuration);
+}
+
+
+export function apiConfigGetPotStill(): Promise<IPotStillConfiguration> {
+    return apiFetchGet<IPotStillConfiguration>("/config/pot-still");
+}
+
+export function apiConfigSetPotStill(configuration: IPotStillConfiguration): Promise<IPotStillConfiguration> {
+    return apiFetchPost<IPotStillConfiguration>("/config/pot-still", configuration);
+}

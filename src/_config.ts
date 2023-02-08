@@ -1,9 +1,7 @@
-import {IconHome, IconPower, IconSettings, IconThermometer, IconWifi, TablerIconsProps} from "@tabler/icons-react";
+import {IconHome, IconPower, IconThermometer, TablerIconsProps} from "@tabler/icons-react";
 import IndexPage from "./pages/IndexPage";
-import WifiPage from "./pages/WifiPage";
 import TemperatureSensorsPage from "./pages/TemperatureSensorsPage";
 import RelayPage from "./pages/RelayPage";
-import { WsTestPage } from "./pages/WsTestPage";
 
 interface MenuItem {
     path: string;
@@ -19,12 +17,7 @@ export const Menu: (MenuItem | null)[] = [
         icon: IconHome,
         component: IndexPage
     },
-    {
-        path: '/ws-test',
-        title: 'WebsocketTest',
-        icon: IconSettings,
-        component: WsTestPage
-    },
+
     null,
     {
         path: '/sensors',
@@ -38,11 +31,11 @@ export const Menu: (MenuItem | null)[] = [
         icon: IconPower,
         component: RelayPage
     },
-    {
-        path: '/wifi',
-        title: 'Wifi',
-        icon: IconWifi,
-        component: WifiPage
-    }
+    // {
+    //     path: '/wifi',
+    //     title: 'Wifi',
+    //     icon: IconWifi,
+    //     component: WifiPage
+    // }
 
 ]
