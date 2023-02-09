@@ -1,47 +1,70 @@
-import {Alert, Button, Group, Modal, Paper, useMantineTheme} from "@mantine/core";
+import {Alert, Button, createStyles, Divider, Group, Paper, Stack, Switch, Text} from "@mantine/core";
 import React, {useContext} from "react";
 import {apiStopCurrentProgram, ProgramStateContext} from "../api/program";
-import GaugeChart from "react-gauge-chart";
+import Chart from 'react-google-charts'
 import {IconAlertCircle} from "@tabler/icons-react";
 
+const defaultPadding = {sm: 'xl', xs: 'xs'};
+const PotStillModal = ({
+                           status,
+                           statusMsg,
+                           handleCancel
+                       }: {
+    status: string,
+    statusMsg: string,
+    handleCancel: () => void
+}) => {
+    const alert = status === 'success'
+        ? <Alert icon={<IconAlertCircle size={16}/>} title="Well done!" color="green">
+            {statusMsg ?? "Program complete"}
+        </Alert>
+        : <Alert icon={<IconAlertCircle size={16}/>} title="Error" color="red">
+            {statusMsg ?? "Please check device for details"}
+        </Alert>;
 
-const PotStillTemperatureGauge = React.memo(function PotStillTemperatureGauge({min = 0, max = 100, value, cool, off}: {
-    min?: number,
-    max?: number,
-    value: number,
-    cool: number,
-    off: number
-}) {
-    const n_value = (value - min) / (max - min);
-    const n_cool = (cool - min) / (max - min);
-    const n_off = (off - min) / (max - min);
-    const theme = useMantineTheme();
-    const index = theme.colorScheme === "light" ? 2 : 9;
-    const warmupColor = theme.colors.blue[index];
-    const distilleryColor = theme.colors.green[index];
-    const overHeatingColor = theme.colors.red[index];
-    const textColor = n_value < n_cool
-        ? theme.colors.blue
-        : n_cool < n_off
-            ? theme.colors.green
-            : theme.colors.red;
-    console.log("REDRAW");
-    return <GaugeChart textColor={theme.colors.orange[8]}
-                       fontSize={'40px'}
-                       nrOfLevels={100}
-                       colors={[warmupColor, distilleryColor, overHeatingColor]}
-                       needleColor={textColor[7] + 'AA'}
-                       needleBaseColor={textColor[8]}
-                       arcsLength={[n_cool, n_off - n_cool, 1 - n_off]}
-                       percent={n_value}
-                       animate={false}
-                       formatTextValue={() => value.toFixed(2) + '°'}
-                       arcPadding={0.02}
-    />
-})
+    return <Paper mt={'xl'} p={defaultPadding}>
+        {alert}
+        <Group position="right" mt={'lg'}>
+            <Button onClick={handleCancel}>Close</Button>
+        </Group>
+    </Paper>
+}
 
-export function PotStillPage() {
+const useStyles = createStyles((theme, _params, getRef) => ({
+    container: {
+        display: 'flex',
+        flexWrap: 'nowrap',
+        alignItems: 'flex-start',
+        justifyItems: 'stretch',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+            // Type safe child reference in nested selectors via ref
+            flexDirection: "column",
+            [`& .${getRef('sensors')}`]: {
+                margin: `${theme.spacing.md}px auto`,
+            }
+
+        },
+    },
+
+    chart: {
+
+        display: 'block',
+        margin: '0px auto',
+        minWidth: '300px',
+        flexGrow: 1
+    },
+    sensors: {
+        ref: getRef('sensors'),
+    },
+
+}));
+// const a: FlexDirection;
+
+export const PotStillPage = React.memo(function PotStillPage() {
     const context = useContext(ProgramStateContext);
+    const {classes} = useStyles();
 
     if (context.program !== 'pot-still') {
         return null;
@@ -52,29 +75,59 @@ export function PotStillPage() {
         await apiStopCurrentProgram();
     }
 
-    return <Paper>
-        {(context.status !== 'running') && <Modal withCloseButton={false} opened={true} onClose={() => {
-        }}>
-            {context.status === 'success'
-                ? <Alert icon={<IconAlertCircle size={16}/>} title="Well done!" color="green">
-                    {context.statusmsg ?? "Program complete"}
-                </Alert>
-                : <Alert icon={<IconAlertCircle size={16}/>} title="Error" color="red">
-                    {context.statusmsg ?? "Please check device for details"}
-                </Alert>}
-            <Group position="right" mt={'lg'}>
-                <Button onClick={handleCancel}>Close</Button>
-            </Group>
-        </Modal>}
-        <PotStillTemperatureGauge value={context.temp[0]}
-                                  cool={context.config.cool_temp}
-                                  off={context.config.off_temp}
-                                  max={120}
-        />
-        <code>
-            <pre>{JSON.stringify(context, null, 2)}</pre>
-        </code>
-        <Button onClick={handleCancel}>Cancel current program</Button>
-    </Paper>
+    const min = 0;
+    const max = 110;
+    console.log("REDRAW POT STILL");
 
-}
+    const gaugeData = [
+        ['Label', 'Value'],
+        ['Cube', +context.temp[0].toFixed(2)],
+    ]
+    if (context.status !== 'running') {
+        return <PotStillModal status={context.status} statusMsg={context.status} handleCancel={handleCancel}/>
+    }
+    return <Paper px={defaultPadding}>
+        <Text size={'lg'} weight={500} align={'center'} mb={'md'}>Pot Still</Text>
+        <div className={classes.container}>
+            <div className={classes.chart}>
+                <Chart
+                    style={{
+                        margin: "0 auto"
+                    }}
+                    chartType="Gauge"
+                    loader={<div>Loading Chart</div>}
+                    data={gaugeData}
+                    options={{
+                        height: 300,
+                        min: min,
+                        max: max,
+                        majorTicks: 6,
+                        greenFrom: context.config.cool_temp,
+                        greenTo: context.config.off_temp,
+                        yellowFrom: context.config.off_temp,
+                        yellowTo: 100,
+                        minorTicks: 5,
+                    }}
+                />
+            </div>
+            <div className={classes.sensors}>
+                <Stack>
+                    <Text size={'lg'} weight={500}>Relays</Text>
+                    <Divider/>
+                    <Switch checked={!!context.relay[0]} label={'Power'} readOnly/>
+                    <Switch checked={!!context.relay[1]} label={'Cooling'} readOnly/>
+                </Stack>
+                <Divider my={'xs'}/>
+                <Stack>
+                    <Switch checked={context.leak[0] > context.config.leak_level} label={<>
+                        Leak sensor level: {context.leak[0]} of {context.config.leak_level}
+                    </>} readOnly/>
+                </Stack>
+            </div>
+        </div>
+
+        <Group position={'center'} mt={'xl'}>
+            <Button onClick={handleCancel} color={'red'}>Cancel current program</Button>
+        </Group>
+    </Paper>
+})

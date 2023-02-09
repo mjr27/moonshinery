@@ -4,6 +4,7 @@ import {IconMoonStars, IconSun} from "@tabler/icons-react";
 import {Logo} from "./layout/Logo";
 import LayoutRoutes from "./layout/LayoutRoutes";
 import {apiGetCurrentProgram, IApiProgramDto, ProgramStateContext} from "./api/program";
+import {DEFAULT_REFRESH_INTERVAL} from "./api/_urls";
 
 
 function App() {
@@ -22,7 +23,7 @@ function App() {
             if (response.success && response.result) {
                 setContext(response.result);
             }
-            timeout = window.setTimeout(worker, 1000)
+            timeout = window.setTimeout(worker, DEFAULT_REFRESH_INTERVAL)
         };
         worker().then();
         return () => clearTimeout(timeout);
@@ -48,7 +49,7 @@ function App() {
                     </Group>
                 </Header>}
             >
-                <Container my={'xs'} p={'md'} pb={0} mb={0}
+                <Container  p={'md'} pb={0}
                            style={{minHeight: '50vh'}}>
                     <LayoutRoutes/>
                 </Container>

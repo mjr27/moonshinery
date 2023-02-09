@@ -5,6 +5,8 @@ import urlJoin from "url-join";
 
 const ROOT_URI: string = "http://10.0.0.227";
 
+export const DEFAULT_REFRESH_INTERVAL = 1000;
+
 // const WS_URL = "ws://10.0.0.227/ws";
 export type ApiResponse<T> = {
     success: true
