@@ -1,4 +1,4 @@
-import {Alert, Button, Modal, Paper, useMantineTheme} from "@mantine/core";
+import {Alert, Button, Group, Modal, Paper, useMantineTheme} from "@mantine/core";
 import React, {useContext} from "react";
 import {apiStopCurrentProgram, ProgramStateContext} from "../api/program";
 import GaugeChart from "react-gauge-chart";
@@ -25,7 +25,7 @@ const PotStillTemperatureGauge = React.memo(function PotStillTemperatureGauge({m
         : n_cool < n_off
             ? theme.colors.green
             : theme.colors.red;
-
+    console.log("REDRAW");
     return <GaugeChart textColor={theme.colors.orange[8]}
                        fontSize={'40px'}
                        nrOfLevels={100}
@@ -42,7 +42,7 @@ const PotStillTemperatureGauge = React.memo(function PotStillTemperatureGauge({m
 
 export function PotStillPage() {
     const context = useContext(ProgramStateContext);
-    console.log("REDRAW");
+
     if (context.program !== 'pot-still') {
         return null;
     }
@@ -51,6 +51,7 @@ export function PotStillPage() {
     async function handleCancel() {
         await apiStopCurrentProgram();
     }
+
     return <Paper>
         {(context.status !== 'running') && <Modal withCloseButton={false} opened={true} onClose={() => {
         }}>
@@ -61,6 +62,9 @@ export function PotStillPage() {
                 : <Alert icon={<IconAlertCircle size={16}/>} title="Error" color="red">
                     {context.statusmsg ?? "Please check device for details"}
                 </Alert>}
+            <Group position="right" mt={'lg'}>
+                <Button onClick={handleCancel}>Close</Button>
+            </Group>
         </Modal>}
         <PotStillTemperatureGauge value={context.temp[0]}
                                   cool={context.config.cool_temp}

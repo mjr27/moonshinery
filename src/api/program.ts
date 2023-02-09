@@ -1,4 +1,4 @@
-import {apiFetchDelete, apiFetchGet, apiFetchPost} from "./_urls";
+import {apiFetchDelete, apiFetchGet, apiFetchPost, ApiResponse} from "./_urls";
 import React from "react";
 
 interface IUnknownProgram {
@@ -29,14 +29,15 @@ type IPotStillProgramInfo = {
 export type IApiProgramDto = IUnknownProgram | IMenuProgramInfo | IPotStillProgramInfo;
 
 
-export async function apiGetCurrentProgram(): Promise<IApiProgramDto> {
+export async function apiGetCurrentProgram(): Promise<ApiResponse<IApiProgramDto>> {
     return apiFetchGet<IApiProgramDto>("/program");
 }
-export async function apiStopCurrentProgram(): Promise<void> {
+
+export async function apiStopCurrentProgram(): Promise<ApiResponse<void>> {
     return apiFetchDelete('/program');
 }
 
-export async function apiStartPotStillProgram(): Promise<void> {
+export async function apiStartPotStillProgram(): Promise<ApiResponse<void>> {
     return apiFetchPost<void>('/program/pot-still');
 }
 

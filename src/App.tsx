@@ -18,7 +18,10 @@ function App() {
     useEffect(() => {
         let timeout: number = 0;
         const worker = async () => {
-            setContext(await apiGetCurrentProgram());
+            let response = await apiGetCurrentProgram();
+            if (response.success && response.result) {
+                setContext(response.result);
+            }
             timeout = window.setTimeout(worker, 1000)
         };
         worker().then();

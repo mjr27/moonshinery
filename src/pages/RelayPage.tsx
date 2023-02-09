@@ -9,12 +9,16 @@ export default function RelayPage() {
     const [relays, setRelays] = useState<boolean[]>([]);
     const reload = async () => {
         const relayList = await apiRelayList();
-        setRelays(relayList.status.map(r => !!r));
+        if (relayList.success && relayList.result) {
+            setRelays(relayList.result.status.map(r => !!r));
+        }
         setLoading(false);
     }
     const toggleRelay = async (relay: number) => {
         const relayList = await apiRelaySet(relay, !relays[relay]);
-        setRelays(relayList.status.map(r => !!r))
+        if (relayList.success && relayList.result) {
+            setRelays(relayList.result.status.map(r => !!r))
+        }
     }
     useEffect(() => {
         let finished = false;

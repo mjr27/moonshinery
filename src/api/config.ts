@@ -1,4 +1,4 @@
-import {apiFetchGet, apiFetchPost} from "./_urls";
+import {apiFetchGet, apiFetchPost, ApiResponse} from "./_urls";
 
 export interface ILeakageConfiguration {
     window: number;
@@ -11,19 +11,19 @@ export interface IPotStillConfiguration {
     off_threshold: number;
 }
 
-export function apiConfigGetLeak(): Promise<ILeakageConfiguration> {
+export function apiConfigGetLeak(): Promise<ApiResponse<ILeakageConfiguration>> {
     return apiFetchGet<ILeakageConfiguration>("/config/leak");
 }
 
-export function apiConfigSetLeak(configuration: ILeakageConfiguration): Promise<ILeakageConfiguration> {
-    return apiFetchPost<ILeakageConfiguration>("/config/leak", configuration);
+export async function apiConfigSetLeak(configuration: ILeakageConfiguration): Promise<ApiResponse<ILeakageConfiguration>> {
+    return await apiFetchPost<ILeakageConfiguration>("/config/leak", configuration);
 }
 
 
-export function apiConfigGetPotStill(): Promise<IPotStillConfiguration> {
+export function apiConfigGetPotStill(): Promise<ApiResponse<IPotStillConfiguration>> {
     return apiFetchGet<IPotStillConfiguration>("/config/pot-still");
 }
 
-export function apiConfigSetPotStill(configuration: IPotStillConfiguration): Promise<IPotStillConfiguration> {
+export function apiConfigSetPotStill(configuration: IPotStillConfiguration): Promise<ApiResponse<IPotStillConfiguration>> {
     return apiFetchPost<IPotStillConfiguration>("/config/pot-still", configuration);
 }

@@ -8,14 +8,23 @@ export default function TemperatureSensorsPage() {
     const [loading, setLoading] = useState(true);
     const [sensors, setSensors] = useState<ISensorInfo>({temperature: [], leakage: []});
     const reload = async () => {
-        setSensors(await apiSensorsList())
+        const response = await apiSensorsList();
+        if (response.success && response.result) {
+            setSensors(response.result);
+        }
         setLoading(false);
     }
     const rotate = async () => {
-        setSensors(await apiTemperatureSensorsRotate())
+        const response = await apiTemperatureSensorsRotate();
+        if (response.success && response.result) {
+            setSensors(response.result)
+        }
     }
     const scan = async () => {
-        setSensors(await apiTemperatureSensorsRescan())
+        const response = await apiTemperatureSensorsRescan();
+        if (response.success && response.result) {
+            setSensors(response.result);
+        }
     }
     useEffect(() => {
         let finished = false;
