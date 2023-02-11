@@ -1,9 +1,21 @@
 import React, {useEffect, useState} from "react";
-import PageHeader from "../layout/PageHeader";
-import {ActionIcon, Box, Group, Switch} from "@mantine/core";
+import {PageTemplate} from "../layout/PageHeader";
+import {ActionIcon, Group, Input, Stack, Switch} from "@mantine/core";
 import {IconReload} from "@tabler/icons-react";
 import {apiRelayList, apiRelaySet} from "../api/relays";
 
+const RelayBlock = (props: {
+    index: number,
+    isEnabled: boolean,
+    onToggle: (index: number, value: boolean) => void
+}) => {
+    return <Input.Wrapper
+        label={<>Relay # {props.index + 1}</>}
+    >
+        <p></p>
+        <Switch checked={props.isEnabled} onClick={() => props.onToggle(props.index, !props.isEnabled)}/>
+    </Input.Wrapper>
+}
 export default function RelayPage() {
     const [loading, setLoading] = useState(true);
     const [relays, setRelays] = useState<boolean[]>([]);
@@ -33,18 +45,19 @@ export default function RelayPage() {
             finished = true;
         }
     }, [])
-    return <>
-        {loading && <PageHeader
-            actions={<Group>
-                <ActionIcon size={'lg'} onClick={reload}>
-                    <IconReload/>
-                </ActionIcon>
-            </Group>}
-        >Temperature sensors</PageHeader>}
-        <Group>
-            {relays.map((enabled, i) => <Box key={i}>
-                <Switch checked={enabled} onClick={() => toggleRelay(i)}/>
-            </Box>)}
-        </Group>
-    </>
+    return <PageTemplate title={'Relays'}
+                         loading={loading}
+                         withPaper
+                         actions={
+                             <Group>
+                                 <ActionIcon size={'lg'} onClick={reload}>
+                                     <IconReload/>
+                                 </ActionIcon>
+                             </Group>
+                         }
+    >
+        <Stack>
+            {relays.map((enabled, i) => <RelayBlock key={i} isEnabled={enabled} index={i} onToggle={toggleRelay}/>)}
+        </Stack>
+    </PageTemplate>
 }

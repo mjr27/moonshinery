@@ -5,6 +5,10 @@ interface IUnknownProgram {
     program: 'unknown';
 }
 
+interface IDisconnected {
+    program: 'disconnected';
+}
+
 interface IMenuProgramInfo {
     program: 'menu'
     temp: number[]
@@ -26,7 +30,7 @@ type IPotStillProgramInfo = {
     status: 'running'
 } | { status: 'error' | 'success', statusmsg: string })
 
-export type IApiProgramDto = IUnknownProgram | IMenuProgramInfo | IPotStillProgramInfo;
+export type IApiProgramDto = IUnknownProgram | IMenuProgramInfo | IDisconnected | IPotStillProgramInfo;
 
 
 export async function apiGetCurrentProgram(): Promise<ApiResponse<IApiProgramDto>> {
@@ -42,5 +46,5 @@ export async function apiStartPotStillProgram(): Promise<ApiResponse<void>> {
 }
 
 export const ProgramStateContext = React.createContext<IApiProgramDto>({
-    'program': 'unknown'
+    'program': 'disconnected'
 });

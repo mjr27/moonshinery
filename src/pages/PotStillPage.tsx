@@ -1,8 +1,9 @@
-import {Alert, Button, createStyles, Divider, Group, Paper, Stack, Switch, Text} from "@mantine/core";
+import {Alert, Button, createStyles, Divider, Group, Paper, Popover, Stack, Switch, Text} from "@mantine/core";
 import React, {useContext} from "react";
 import {apiStopCurrentProgram, ProgramStateContext} from "../api/program";
-import Chart from 'react-google-charts'
 import {IconAlertCircle} from "@tabler/icons-react";
+import {SinglePageLayout} from "../layout/Layouts";
+import {TemperatureGauge} from "../components/TemperatureGauge";
 
 const defaultPadding = {sm: 'xl', xs: 'xs'};
 const PotStillModal = ({
@@ -75,59 +76,53 @@ export const PotStillPage = React.memo(function PotStillPage() {
         await apiStopCurrentProgram();
     }
 
-    const min = 0;
-    const max = 110;
-    console.log("REDRAW POT STILL");
-
-    const gaugeData = [
-        ['Label', 'Value'],
-        ['Cube', +context.temp[0].toFixed(2)],
-    ]
     if (context.status !== 'running') {
         return <PotStillModal status={context.status} statusMsg={context.status} handleCancel={handleCancel}/>
     }
-    return <Paper px={defaultPadding}>
-        <Text size={'lg'} weight={500} align={'center'} mb={'md'}>Pot Still</Text>
-        <div className={classes.container}>
-            <div className={classes.chart}>
-                <Chart
-                    style={{
-                        margin: "0 auto"
-                    }}
-                    chartType="Gauge"
-                    loader={<div>Loading Chart</div>}
-                    data={gaugeData}
-                    options={{
-                        height: 300,
-                        min: min,
-                        max: max,
-                        majorTicks: 6,
-                        greenFrom: context.config.cool_temp,
-                        greenTo: context.config.off_temp,
-                        yellowFrom: context.config.off_temp,
-                        yellowTo: 100,
-                        minorTicks: 5,
-                    }}
-                />
+    return <SinglePageLayout>
+        <Paper px={defaultPadding}>
+            <Text size={'lg'} weight={500} align={'center'} mb={'md'}>Pot Still</Text>
+            <div className={classes.container}>
+                <div className={classes.chart}>
+                    <TemperatureGauge
+                        style={{
+                            margin: "0 auto"
+                        }}
+                        value={context.temp[0]}
+                        greenFrom={context.config.cool_temp}
+                        greenTo={context.config.off_temp}
+                        yellowFrom={context.config.off_temp}
+                        yellowTo={100}
+                        height={300}
+                    />
+                </div>
+                <div className={classes.sensors}>
+                    <Stack>
+                        <Text size={'lg'} weight={500}>Relays</Text>
+                        <Divider/>
+                        <Switch checked={!!context.relay[0]} label={'Power'} readOnly/>
+                        <Switch checked={!!context.relay[1]} label={'Cooling'} readOnly/>
+                    </Stack>
+                    <Divider my={'xs'}/>
+                    <Stack>
+                        <Switch checked={context.leak[0] > context.config.leak_level} label={<>
+                            Leak sensor level: {context.leak[0]} of {context.config.leak_level}
+                        </>} readOnly/>
+                    </Stack>
+                </div>
             </div>
-            <div className={classes.sensors}>
-                <Stack>
-                    <Text size={'lg'} weight={500}>Relays</Text>
-                    <Divider/>
-                    <Switch checked={!!context.relay[0]} label={'Power'} readOnly/>
-                    <Switch checked={!!context.relay[1]} label={'Cooling'} readOnly/>
-                </Stack>
-                <Divider my={'xs'}/>
-                <Stack>
-                    <Switch checked={context.leak[0] > context.config.leak_level} label={<>
-                        Leak sensor level: {context.leak[0]} of {context.config.leak_level}
-                    </>} readOnly/>
-                </Stack>
-            </div>
-        </div>
 
-        <Group position={'center'} mt={'xl'}>
-            <Button onClick={handleCancel} color={'red'}>Cancel current program</Button>
-        </Group>
-    </Paper>
+            <Group position={'center'} mt={'xl'}>
+                <Popover position="top" withArrow shadow="md">
+                    <Popover.Target>
+                        <Button color={'red'}>Cancel current program</Button>
+                    </Popover.Target>
+                    <Popover.Dropdown>
+                        <Text mb={'md'}>Do you really want to cancel pot still?</Text>
+                        <Button onClick={handleCancel} color={'red'} fullWidth>Cancel current program</Button>
+                    </Popover.Dropdown>
+                </Popover>
+            </Group>
+        </Paper>
+    </SinglePageLayout>
 })

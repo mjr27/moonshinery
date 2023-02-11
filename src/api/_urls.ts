@@ -3,9 +3,11 @@
 // export const ROOT_URI: string = process.env.REACT_APP_ESP32_HOST ?? "https://esp32.local";
 import urlJoin from "url-join";
 
-const ROOT_URI: string = "http://10.0.0.227";
+export const API_HOST_LOCAL_STORAGE_KEY = "API_HOST_LOCAL_STORAGE";
+export const API_HOST_LOCAL_DEFAULT_VALUE = "http://esp32.local";
 
 export const DEFAULT_REFRESH_INTERVAL = 1000;
+export const DEFAULT_TIMEOUT = 5000;
 
 // const WS_URL = "ws://10.0.0.227/ws";
 export type ApiResponse<T> = {
@@ -14,14 +16,19 @@ export type ApiResponse<T> = {
 } | {
     success: false
     error: string;
+} | {
+    success: false
+    sysError: string;
 }
 
 export function getApiUri(relativeUri: string) {
-    return urlJoin(ROOT_URI, relativeUri);
+    const root = localStorage.getItem(API_HOST_LOCAL_STORAGE_KEY) ?? API_HOST_LOCAL_DEFAULT_VALUE;
+    return urlJoin(root, relativeUri);
 }
 
-async function parseResponse<T>(response: Response): Promise<ApiResponse<T>> {
+async function parseResponse<T>(responsePromise: Promise<Response>): Promise<ApiResponse<T>> {
     try {
+        const response = await responsePromise;
         if (response.status === 200) {
             return {
                 success: true,
@@ -43,25 +50,34 @@ async function parseResponse<T>(response: Response): Promise<ApiResponse<T>> {
         if (error instanceof Error) message = error.message
         return {
             success: false,
-            error: message
+            sysError: message
         }
     }
+}
 
+export async function fetchX(input: RequestInfo | URL, init?: RequestInit) {
+    const abort = new AbortController();
+    const id = setTimeout(() => abort.abort(), DEFAULT_TIMEOUT);
+    init ??= {}
+    init = {...init, signal: abort.signal};
+    const result = await fetch(input, init);
+    clearTimeout(id);
+    return result;
 
 }
 
 export async function apiFetchGet<T>(relativeUri: string): Promise<ApiResponse<T>> {
-    return await parseResponse<T>(await fetch(getApiUri(relativeUri)));
+    return await parseResponse<T>(fetchX(getApiUri(relativeUri)));
 }
 
 export async function apiFetchDelete(relativeUri: string): Promise<ApiResponse<void>> {
-    return await parseResponse<void>(await fetch(getApiUri(relativeUri), {
+    return await parseResponse<void>(fetch(getApiUri(relativeUri), {
         method: 'delete'
     }));
 }
 
 
-export async function apiFetchPost<T>(relativeUri: string, value?: any): Promise<ApiResponse<T>> {
+export async function apiFetchPost<T>(relativeUri: string, value?: unknown): Promise<ApiResponse<T>> {
     const init: RequestInit = {
         method: 'post',
     }
@@ -69,6 +85,18 @@ export async function apiFetchPost<T>(relativeUri: string, value?: any): Promise
         init.headers = {"Content-Type": "application/json"}
         init.body = JSON.stringify(value);
     }
-    return await parseResponse<T>(await fetch(getApiUri(relativeUri), init));
+    return await parseResponse<T>(fetch(getApiUri(relativeUri), init));
+
+}
+
+export async function apiFetchPut<T>(relativeUri: string, value?: unknown): Promise<ApiResponse<T>> {
+    const init: RequestInit = {
+        method: 'put',
+    }
+    if (value !== null && value !== undefined) {
+        init.headers = {"Content-Type": "application/json"}
+        init.body = JSON.stringify(value);
+    }
+    return await parseResponse<T>(fetch(getApiUri(relativeUri), init));
 
 }

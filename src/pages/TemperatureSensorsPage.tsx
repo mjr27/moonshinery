@@ -1,12 +1,13 @@
-import PageHeader from "../layout/PageHeader";
+import {PageTemplate} from "../layout/PageHeader";
 import React, {useEffect, useState} from "react";
-import {ActionIcon, Code, Group, LoadingOverlay, RingProgress, Text} from "@mantine/core";
-import {IconLoader, IconPlayerTrackNext, IconReload} from "@tabler/icons-react";
-import {apiSensorsList, apiTemperatureSensorsRescan, apiTemperatureSensorsRotate, ISensorInfo} from "../api/sensors";
+import {ActionIcon, Code, Group, LoadingOverlay, Stack, Text} from "@mantine/core";
+import {IconArrowDown, IconArrowUp, IconLoader, IconReload} from "@tabler/icons-react";
+import {apiSensorsList, apiTemperatureSensorMoveUp, apiTemperatureSensorsRescan, ISensorInfo} from "../api/sensors";
+import {TemperatureGauge} from "../components/TemperatureGauge";
 
 export default function TemperatureSensorsPage() {
     const [loading, setLoading] = useState(true);
-    const [sensors, setSensors] = useState<ISensorInfo>({temperature: [], leakage: []});
+    const [sensors, setSensors] = useState<ISensorInfo>({temp: [], leak: []});
     const reload = async () => {
         const response = await apiSensorsList();
         if (response.success && response.result) {
@@ -14,12 +15,14 @@ export default function TemperatureSensorsPage() {
         }
         setLoading(false);
     }
-    const rotate = async () => {
-        const response = await apiTemperatureSensorsRotate();
+
+    async function handleMoveUp(number: number) {
+        const response = await apiTemperatureSensorMoveUp(number);
         if (response.success && response.result) {
             setSensors(response.result)
         }
     }
+
     const scan = async () => {
         const response = await apiTemperatureSensorsRescan();
         if (response.success && response.result) {
@@ -39,35 +42,42 @@ export default function TemperatureSensorsPage() {
             finished = true;
         }
     }, [])
-    return <>
-        <PageHeader
-            actions={<Group>
-                <ActionIcon size={'lg'} onClick={rotate}>
-                    <IconPlayerTrackNext/>
-                </ActionIcon>
-                <ActionIcon size={'lg'} onClick={scan}>
-                    <IconLoader/>
-                </ActionIcon>
-                <ActionIcon size={'lg'} onClick={reload}>
-                    <IconReload/>
-                </ActionIcon>
-            </Group>}
-        >Temperature sensors</PageHeader>
+
+
+    return <PageTemplate title={'Temperature sensors'} actions={
+        <Group spacing={'xs'}>
+            <ActionIcon size={'sm'} onClick={scan}>
+                <IconLoader/>
+            </ActionIcon>
+            <ActionIcon size={'sm'} onClick={reload}>
+                <IconReload/>
+            </ActionIcon>
+        </Group>
+    }>
         <div style={{position: 'relative'}}>
             <LoadingOverlay visible={loading}/>
-            <Group position={'apart'}>
-                {sensors.temperature.map((value, i) => <RingProgress
-                    key={i}
-                    size={170}
-                    thickness={16}
-                    label={<Text size="xs" align="center" px="xs" sx={{pointerEvents: 'none'}}>{value}</Text>}
-                    sections={[
-                        {value: value, color: 'cyan', tooltip: 'Temperature'},
-                    ]}/>)}
+            <Group position={'center'}>
+                {sensors.temp.map((sensor, i) => <Stack align={'center'} mb={'lg'}>
+                        <TemperatureGauge
+                            width={200}
+                            height={200}
+                            value={sensor.value}
+                            key={sensor.id}/>
+                        <Group spacing={0}>
+                            <ActionIcon disabled={i == 0} onClick={() => handleMoveUp(i)}>
+                                <IconArrowUp/>
+                            </ActionIcon>
+                            <Text size={'sm'} weight={500}><code>{sensor.id}</code></Text>
+                            <ActionIcon disabled={i == sensors.temp.length - 1} onClick={() => handleMoveUp(i + 1)}>
+                                <IconArrowDown/>
+                            </ActionIcon>
+                        </Group>
+                    </Stack>
+                )}
             </Group>
             <Group position={'apart'}>
-                {sensors.leakage.map((value, i) => <Code key={i}>{value}</Code>)}
+                {sensors.leak.map((value, i) => <Code key={i}>{value}</Code>)}
             </Group>
         </div>
-    </>
+    </PageTemplate>
 }

@@ -1,4 +1,4 @@
-import {apiFetchGet, apiFetchPost, ApiResponse} from "./_urls";
+import {apiFetchGet, apiFetchPut, ApiResponse} from "./_urls";
 
 export interface ILeakageConfiguration {
     window: number;
@@ -11,12 +11,24 @@ export interface IPotStillConfiguration {
     off_threshold: number;
 }
 
+export interface IFirmwareInfo {
+    name: string
+    date: string
+    time: string
+    idf_ver: string
+    ver: string
+}
+
+export async function apiGetFirmwareInfo(): Promise<ApiResponse<IFirmwareInfo>> {
+    return apiFetchGet<IFirmwareInfo>('/info');
+}
+
 export function apiConfigGetLeak(): Promise<ApiResponse<ILeakageConfiguration>> {
     return apiFetchGet<ILeakageConfiguration>("/config/leak");
 }
 
 export async function apiConfigSetLeak(configuration: ILeakageConfiguration): Promise<ApiResponse<ILeakageConfiguration>> {
-    return await apiFetchPost<ILeakageConfiguration>("/config/leak", configuration);
+    return await apiFetchPut<ILeakageConfiguration>("/config/leak", configuration);
 }
 
 
@@ -25,5 +37,5 @@ export function apiConfigGetPotStill(): Promise<ApiResponse<IPotStillConfigurati
 }
 
 export function apiConfigSetPotStill(configuration: IPotStillConfiguration): Promise<ApiResponse<IPotStillConfiguration>> {
-    return apiFetchPost<IPotStillConfiguration>("/config/pot-still", configuration);
+    return apiFetchPut<IPotStillConfiguration>("/config/pot-still", configuration);
 }
