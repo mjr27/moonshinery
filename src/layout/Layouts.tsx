@@ -45,6 +45,7 @@ export const SinglePageLayout = ({children}: { children?: React.ReactElement }) 
 
 export const MultiPageLayout = ({children}: { children?: React.ReactNode }) => {
     const theme = useMantineTheme();
+    // const size = useScre
     const {colorScheme, toggleColorScheme} = useMantineColorScheme();
     const [opened, setOpened] = useState(false);
     const location = useLocation();
@@ -61,7 +62,12 @@ export const MultiPageLayout = ({children}: { children?: React.ReactNode }) => {
             },
         }}
         navbar={
-            <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{sm: 200, lg: 300}} style={{zIndex: 500}}>
+            <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{sm: 200, lg: 300}} sx={(t) => ({
+                [`@media (max-width: ${t.breakpoints.sm}px)`]: {
+                    zIndex: 500
+                },
+                zIndex: 100
+            })}>
                 <SidebarMenu/>
             </Navbar>
         }

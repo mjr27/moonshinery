@@ -27,7 +27,7 @@ export default function LayoutRoutes() {
                     <Route path={'/settings/leak'} element={<LeakageSettingForm/>}/>
                     <Route path={'/settings/pot-still'} element={<PotStillSettingForm/>}/>
                     <Route path={'/settings/reflux-still'} element={<RefluxStillSettingForm/>}/>
-                    <Route path={'/settings/wifi'} element={<WifiConfiguration/>}/>
+                    <Route path={'/settings/wifi/*'} element={<WifiConfiguration/>}/>
                     <Route path={'/about'} element={<AboutPage/>}/>
                 </Routes>
             </MultiPageLayout>;
