@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {apiWifiConnectToNetwork, apiWifiScanNetworks, IWifiNetwork} from "../api/wifi";
-import {ActionIcon, Button, Group, Input, Modal, Popover, Text, Title} from "@mantine/core";
-import {IconPlugConnected, IconSquarePlus} from "@tabler/icons-react";
+import {ActionIcon, Button, Group, Input, Modal, Popover, Text, Title, Tooltip} from "@mantine/core";
+import {IconPlugConnected, IconSquarePlus, IconWifi, IconWifi0, IconWifi1, IconWifi2} from "@tabler/icons-react";
 import {useInputState} from "@mantine/hooks";
 import {IWifiSubPage} from "../settings/WifiConfiguration";
 
@@ -11,6 +11,9 @@ function AddNetworkConnectButton({network}: { network: IWifiNetwork }) {
 
     function handleConnect() {
         if (network.known) {
+            apiWifiConnectToNetwork(network.ssid).then(
+                handleClose
+            ).catch(handleClose)
             return;
         }
         setPassword("");
@@ -28,30 +31,33 @@ function AddNetworkConnectButton({network}: { network: IWifiNetwork }) {
         ).catch(handleClose)
     }
 
-    return <Popover closeOnClickOutside={true}>
-        <Popover.Target>
-
-            <ActionIcon>
-                <Modal
-                    opened={opened}
-                    onClose={handleClose}
-                    title="Connect to WiFi"
-                >
-                    <Input.Wrapper label={"SSID"}>
-                        <Input value={network.ssid} readOnly/>
-                    </Input.Wrapper>
-                    <Input.Wrapper label={"Password"}>
-                        <Input value={password} onChange={setPassword}/>
-                    </Input.Wrapper>
-                    <Group position={'right'} mt={'lg'}>
-                        <Button onClick={handleConnectWithPassword}>Connect</Button>
-                    </Group>
-                    {/* Modal content */}
-                </Modal>
-                <IconSquarePlus onClick={handleConnect}/>
-            </ActionIcon>
-        </Popover.Target>
-    </Popover>
+    return network.known
+        ? <ActionIcon variant={'subtle'} color={'primary'} onClick={handleConnect}>
+            <IconPlugConnected/>
+        </ActionIcon>
+        : <Popover closeOnClickOutside={true}>
+            <Popover.Target>
+                <ActionIcon variant={'subtle'} color={'primary'}>
+                    <Modal
+                        opened={opened}
+                        onClose={handleClose}
+                        title="Connect to WiFi"
+                    >
+                        <Input.Wrapper label={"SSID"}>
+                            <Input value={network.ssid} readOnly/>
+                        </Input.Wrapper>
+                        <Input.Wrapper label={"Password"}>
+                            <Input value={password} onChange={setPassword}/>
+                        </Input.Wrapper>
+                        <Group position={'right'} mt={'lg'}>
+                            <Button onClick={handleConnectWithPassword}>Connect</Button>
+                        </Group>
+                        {/* Modal content */}
+                    </Modal>
+                    <IconSquarePlus onClick={handleConnect}/>
+                </ActionIcon>
+            </Popover.Target>
+        </Popover>
 }
 
 export function WifiNetworksList({setLoading}: IWifiSubPage) {
@@ -74,13 +80,18 @@ export function WifiNetworksList({setLoading}: IWifiSubPage) {
         <Title order={4} m={'md'}>List of connected networks</Title>
         {networks.map(network => <Group position={'apart'} key={network.ssid} m={'md'}>
             <Text>{network.ssid}</Text>
-            <Group position={'right'} spacing={0}>
-                {network.known
-                    ? <ActionIcon>
-                        <IconPlugConnected/>
-                    </ActionIcon>
-                    : <AddNetworkConnectButton network={network}/>}
 
+            <Group position={'right'} spacing={0}>
+                <AddNetworkConnectButton network={network}/>
+                <Tooltip label={network.rssi}>
+                    {network.rssi > -55
+                        ? <IconWifi/>
+                        : network.rssi > -75
+                            ? <IconWifi2/>
+                            : network.rssi > -85
+                                ? <IconWifi1/>
+                                : <IconWifi0/>
+                    }</Tooltip>
             </Group>
         </Group>)}
     </>

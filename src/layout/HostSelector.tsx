@@ -1,5 +1,5 @@
 import {Button, Container, Input, Paper, Title} from "@mantine/core";
-import React from "react";
+import React, {useEffect} from "react";
 import {useInputState, useLocalStorage} from "@mantine/hooks";
 import urlJoin from "url-join";
 import {API_HOST_LOCAL_DEFAULT_VALUE, API_HOST_LOCAL_STORAGE_KEY, fetchX} from "../api/_urls";
@@ -10,16 +10,20 @@ export function HostSelector({onRetry}: { onRetry: () => void }) {
         defaultValue: API_HOST_LOCAL_DEFAULT_VALUE,
         serialize(value: string): string {
             return value;
+        },
+        deserialize(value: string) {
+            return value;
         }
     });
 
     const [value, setValue] = useInputState<string>(storage);
+    useEffect(() => {
+        setValue(storage);
+    }, [storage])
 
     async function handleTest() {
         try {
-            const response = await fetchX(urlJoin(value, "/info"))
-            console.log("RESPONSE IS", response);
-            console.log(`SETTING '${value}'`)
+            await fetchX(urlJoin(value, "/info"));
             setStorage(value);
             onRetry();
         } catch (e) {
@@ -31,9 +35,9 @@ export function HostSelector({onRetry}: { onRetry: () => void }) {
     return <Container p={'xl'}>
         <Title order={2} mb={'xl'}>1st Private Moonshinery</Title>
         <Title order={4} mb={'lg'}>Host selector</Title>
-        <Paper shadow="xs" p="md">
+        <Paper shadow="xs" p="md" component={'form'} onSubmit={handleTest}>
             <Input value={value} onChange={setValue}/>
-            <Button onClick={handleTest}>Retry</Button>
+            <Button mt={'md'} type={'submit'}>Retry</Button>
         </Paper>
     </Container>
 }

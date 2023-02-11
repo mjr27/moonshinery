@@ -24,11 +24,9 @@ function App() {
             } else {
                 if (!response.success && 'sysError' in response) {
                     setContext(null);
-                    console.log("ERROR", response.sysError);
                     return;
                 }
             }
-            console.log("NEXT")
             timeout = window.setTimeout(worker, DEFAULT_REFRESH_INTERVAL)
         };
         worker().then();

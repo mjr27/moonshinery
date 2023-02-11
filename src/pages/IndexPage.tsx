@@ -13,7 +13,6 @@ export function PotStillBlock({onStart}: { onStart: () => void }) {
         try {
             await apiStartPotStillProgram();
         } catch (e) {
-            console.log("ERROR", e)
             setButtonDisabled(false);
             return;
         }

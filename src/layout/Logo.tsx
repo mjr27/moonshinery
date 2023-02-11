@@ -1,9 +1,10 @@
-import {IconPokerChip} from "@tabler/icons-react";
 import {Group, Text} from "@mantine/core";
 
 export const Logo = () => <Group spacing={'xs'}>
-    <a href={'/'}> <IconPokerChip/></a>
-    <Text component={'a'} href={'/'}>
-        ESP32
+    <a href={'/'}>
+        <img src={process.env.PUBLIC_URL + '/img/logo.png'} alt={'The First Private Moonshinery'}/>
+    </a>
+    <Text component={'a'} href={'/'} weight={500}>
+        The First Private Moonshinery
     </Text>
 </Group>

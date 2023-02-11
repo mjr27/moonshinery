@@ -1,4 +1,4 @@
-import {apiFetchGet, apiFetchPost, ApiResponse} from "./_urls";
+import {apiFetchGet, apiFetchPost, apiFetchPut, ApiResponse} from "./_urls";
 
 // http://esp32.local
 
@@ -14,16 +14,16 @@ export interface IWifiNetwork {
 }
 
 export async function apiWifiKnownList(): Promise<ApiResponse<ISsidPassword[]>> {
-    return apiFetchGet<ISsidPassword[]>("/wifi/networks/saved");
+    return apiFetchGet<ISsidPassword[]>("/wifi/saved");
 }
 
 export async function apiWifiScanNetworks(): Promise<ApiResponse<IWifiNetwork[]>> {
-    return apiFetchGet<IWifiNetwork[]>("/wifi/networks");
+    return apiFetchGet<IWifiNetwork[]>("/wifi/scan");
 }
 
 export async function apiWifiForgetConnection(ssid: string): Promise<ApiResponse<void>> {
     const request: { ssid: string, password?: string } = {ssid};
-    return apiFetchPost<void>("/wifi/networks/forget", request);
+    return apiFetchPost<void>("/wifi/forget", request);
 }
 
 export async function apiWifiConnectToNetwork(ssid: string, password?: string): Promise<ApiResponse<void>> {
@@ -31,5 +31,22 @@ export async function apiWifiConnectToNetwork(ssid: string, password?: string): 
     if (password) {
         request.password = password;
     }
-    return apiFetchPost<void>("/wifi/networks", request);
+    return apiFetchPost<void>("/wifi/connect", request);
+}
+
+
+export async function apiWifiGetApDetails(): Promise<ApiResponse<ISsidPassword>> {
+    return apiFetchGet<ISsidPassword>("/wifi/ap");
+}
+
+export async function apiWifiCreateApi(): Promise<ApiResponse<void>> {
+    return apiFetchPost<void>("/wifi/ap");
+}
+
+export async function apiWifiSetApiDetails(ssid: string, password?: string): Promise<ApiResponse<void>> {
+    const request: { ssid: string, password?: string } = {ssid};
+    if (password) {
+        request.password = password;
+    }
+    return apiFetchPut<void>("/wifi/ap", request);
 }
